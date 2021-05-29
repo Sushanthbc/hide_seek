@@ -8,18 +8,33 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	database_host     = os.Getenv("HIDE_SEEK_DATABASE_HOST")
+	database_user     = os.Getenv("HIDE_SEEK_DATABASE_USER")
+	database_password = os.Getenv("HIDE_SEEK_DATABASE_PASSWORD")
+	database_name     = os.Getenv("HIDE_SEEK_DATABASE_NAME")
+	database_port     = os.Getenv("HIDE_SEEK_DATABASE_PORT")
+)
+
 func ConnectDatabase() *gorm.DB {
-	dsn := fmt.Sprintf("host=localhost user=%v password=basic dbname=hide_seek port=5432 sslmode=disable",
-		os.Getenv("HIDE_SEEK_DATABASE_USER"))
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable",
+		database_host,
+		database_user,
+		database_password,
+		database_name,
+		database_port)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
 	}
 
-	db.AutoMigrate(&User{})
+	err = db.AutoMigrate(&User{})
+
+	if err != nil {
+		fmt.Errorf("Auto migrations did not work - %v", err)
+	}
 
 	return db
 }
