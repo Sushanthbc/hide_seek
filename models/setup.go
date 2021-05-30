@@ -17,7 +17,9 @@ var (
 	database_port     = os.Getenv("HIDE_SEEK_DATABASE_PORT")
 )
 
-func ConnectDatabase() *gorm.DB {
+var DB *gorm.DB
+
+func ConnectDatabase() {
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable",
 		database_host,
 		database_user,
@@ -25,17 +27,17 @@ func ConnectDatabase() *gorm.DB {
 		database_name,
 		database_port)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	err = db.AutoMigrate(&User{})
+	err = database.AutoMigrate(&User{})
 
 	if err != nil {
 		log.Fatalf("Auto migrations did not work - %v", err)
 	}
 
-	return db
+	DB = database
 }
