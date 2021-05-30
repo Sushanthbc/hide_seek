@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -33,7 +34,7 @@ func ConnectDatabase() *gorm.DB {
 	err = db.AutoMigrate(&User{})
 
 	if err != nil {
-		fmt.Errorf("Auto migrations did not work - %v", err)
+		log.Fatalf("Auto migrations did not work - %v", err)
 	}
 
 	return db

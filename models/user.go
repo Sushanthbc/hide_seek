@@ -1,39 +1,40 @@
 package models
 
 import (
+	"fmt"
 	"log"
 
 	"gorm.io/gorm"
 )
 
 type User struct {
-	gorm.Model
 	Email        string
 	PasswordHash string
 	Name         string
 }
 
-//Fetch all the users
-func GetAllUser(db *gorm.DB) (*gorm.DB, error) {
-
-	created_record := db.Create(&User{
-		Email:        "sushanthbc@gmail.com",
-		PasswordHash: "asdasdasdasdas",
-		Name:         "Sushanth",
+//create new user
+func CreateNewUser(db gorm.DB, email string, password_hash string, name string) error {
+	res := db.Create(&User{
+		Email:        email,
+		PasswordHash: password_hash,
+		Name:         name,
 	})
 
-	if created_record.Error != nil {
-		log.Fatal("Something went wrong in creating a record")
+	if res.Error != nil {
+		err_message := fmt.Errorf("Could not create a new user - %v", res.Error)
+		log.Fatal(err_message)
+		return err_message
 	}
 
+	return nil
+}
+
+//Fetch all the users
+func GetAllUser(db *gorm.DB) *gorm.DB {
 	var users []User
 
-	result := db.Find(&users)
-	err := result.Error
+	res := db.Find(&users)
 
-	if err != nil {
-		log.Fatal("Could not retrieve all User information")
-	}
-
-	return result, err
+	return res
 }
