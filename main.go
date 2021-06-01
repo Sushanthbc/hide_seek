@@ -19,5 +19,9 @@ func main() {
 		controllers.CreateNewUser(c)
 	})
 
+	r.POST("/authenticate", func(c *gin.Context) {
+		controllers.AuthenticateUser(c)
+	})
+
 	r.Run()
 }
