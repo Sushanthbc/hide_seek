@@ -14,7 +14,7 @@ func main() {
 	r := gin.Default()
 	err := godotenv.Load(".env")
 	if err != nil {
-		panic("Failed to load environment variables: #{err}")
+		panic(err.Error())
 	}
 	models.ConnectDatabase()
 
@@ -29,7 +29,7 @@ func main() {
 	err = r.Run()
 
 	if err != nil {
-		panic("Failed to run gin gonic server #{err}")
+		panic(err.Error())
 	}
 }
 
