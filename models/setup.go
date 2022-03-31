@@ -1,35 +1,31 @@
 package models
 
 import (
-	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
-	"os"
+	"context"
+	"github.com/go-redis/redis/v8"
 )
 
-var DB *gorm.DB
+var CTX = context.Background()
 
-func ConnectDatabase() {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable",
-		os.Getenv("HIDE_SEEK_DATABASE_HOST"),
-		os.Getenv("HIDE_SEEK_DATABASE_USER"),
-		os.Getenv("HIDE_SEEK_DATABASE_NAME"),
-		os.Getenv("HIDE_SEEK_DATABASE_NAME"),
-		os.Getenv("HIDE_SEEK_DATABASE_PORT"),
-	)
+func ConnectDatabase() *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = database.AutoMigrate(&User{})
-
-	if err != nil {
-		log.Fatalf("Auto migrations did not work - %v", err)
-	}
-
-	DB = database
+	return rdb
 }
+
+// GET /feature_flags -> fetchAllFeatureFlags
+// GET /feature_flags/:unique_key
+//POST /feature_flags/:unique_key
+//{
+//   "staging": "true",
+//   "production": "false",
+//}
+// "feat_toggle_button" : {
+//     "staging": "true",
+//     "production": "false",
+//     "development": "true"
+// }
