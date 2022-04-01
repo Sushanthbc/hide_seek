@@ -2,30 +2,20 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v8"
+	"os"
 )
 
 var CTX = context.Background()
 
 func ConnectDatabase() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr: fmt.Sprintf("%v:%v", os.Getenv("HIDE_SEEK_DATABASE_HOST"),
+			os.Getenv(os.Getenv("HIDE_SEEK_DATABASE_PORT"))),
 		Password: "",
 		DB:       0,
 	})
 
 	return rdb
 }
-
-// GET /feature_flags -> fetchAllFeatureFlags
-// GET /feature_flags/:unique_key
-//POST /feature_flags/:unique_key
-//{
-//   "staging": "true",
-//   "production": "false",
-//}
-// "feat_toggle_button" : {
-//     "staging": "true",
-//     "production": "false",
-//     "development": "true"
-// }
