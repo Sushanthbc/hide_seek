@@ -1,35 +1,21 @@
 package models
 
 import (
+	"context"
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
+	"github.com/go-redis/redis/v8"
 	"os"
 )
 
-var DB *gorm.DB
+var CTX = context.Background()
 
-func ConnectDatabase() {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable",
-		os.Getenv("HIDE_SEEK_DATABASE_HOST"),
-		os.Getenv("HIDE_SEEK_DATABASE_USER"),
-		os.Getenv("HIDE_SEEK_DATABASE_NAME"),
-		os.Getenv("HIDE_SEEK_DATABASE_NAME"),
-		os.Getenv("HIDE_SEEK_DATABASE_PORT"),
-	)
+func ConnectDatabase() *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%v:%v", os.Getenv("HIDE_SEEK_DATABASE_HOST"),
+			os.Getenv(os.Getenv("HIDE_SEEK_DATABASE_PORT"))),
+		Password: "",
+		DB:       0,
+	})
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = database.AutoMigrate(&User{})
-
-	if err != nil {
-		log.Fatalf("Auto migrations did not work - %v", err)
-	}
-
-	DB = database
+	return rdb
 }

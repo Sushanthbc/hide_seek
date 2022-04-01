@@ -10,19 +10,22 @@ import (
 	"os"
 )
 
+// A
+// A => { environments -> FeatureFlag }
+
 func main() {
 	r := gin.Default()
 	err := godotenv.Load(".env")
 	if err != nil {
 		panic(err.Error())
 	}
-	models.ConnectDatabase()
+	rdb := models.ConnectDatabase()
 
 	apiKeyAuth := r.Group("/")
 	apiKeyAuth.Use(ApiAuthRequired())
 	{
 		apiKeyAuth.GET("/users", func(c *gin.Context) {
-			controllers.Index(c)
+			controllers.Index(c, rdb)
 		})
 	}
 
